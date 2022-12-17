@@ -13,14 +13,13 @@
 #define FORTUNE_FILE "/lib/fortunes"
 #define FORTUNE_LEN 2048
 
-#define USE(x,y) x ? x : y
+#define USE(x,y) y ? y : x
 
 void fortune(FILE *ffile, char sep);
-void print_usage(void);
 
 int main(int argc, char *argv[])
 {
-	char *ffile = USE(argv[1], FORTUNE_FILE);
+	char *ffile = USE(FORTUNE_FILE, argv[1]);
 	FILE *fp = fopen(ffile, "r");
 
 	if (!fp) {
@@ -29,7 +28,7 @@ int main(int argc, char *argv[])
 	}
 
 	if (argc > 3) {
-		print_usage();
+		fprintf(stderr, "usage: fortune [file] [separator]\n");
 		return EXIT_FAILURE;
 	}
 
@@ -75,9 +74,4 @@ void fortune(FILE *ffile, char sep)
 			}
 		}
 	}
-}
-
-void print_usage()
-{
-	fprintf(stderr, "usage: fortune [file] [separator]\n");
 }
