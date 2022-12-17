@@ -13,22 +13,19 @@
 #define FORTUNE_FILE "/lib/fortunes"
 #define FORTUNE_LEN 2048
 
+#define USE(x,y) x ? x : y
+
 void fortune(FILE *ffile, char sep);
 void print_usage(void);
 
-char sep = DEFAULT_SEPARATOR;
-
 int main(int argc, char *argv[])
 {
-	FILE *fp;
+	char *ffile = USE(argv[1], FORTUNE_FILE);
+	FILE *fp = fopen(ffile, "r");
 
-	if (argc >= 1) {
-		fp = fopen(argv[1] ?: FORTUNE_FILE, "r");
-		if (!fp) {
-			fprintf(stderr, "%s not found\n", argv[1] ?: FORTUNE_FILE);
-			print_usage();
-			return EXIT_FAILURE;
-		}
+	if (!fp) {
+		fprintf(stderr, "%s not found\n", ffile);
+		return EXIT_FAILURE;
 	}
 
 	if (argc > 3) {
@@ -36,11 +33,9 @@ int main(int argc, char *argv[])
 		return EXIT_FAILURE;
 	}
 
-	if (argc > 2)
-		sep = *argv[2];
-
-	fortune(fp, sep);
+	fortune(fp, USE(*argv[2], DEFAULT_SEPARATOR));
 	fclose(fp);
+
 	return EXIT_SUCCESS;
 }
 
