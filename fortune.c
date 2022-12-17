@@ -9,9 +9,12 @@
 #include <string.h>
 #include <time.h>
 
+#define DEFAULT_SEPARATOR '%'
+#define FORTUNE_LEN 2048
+
 void fortune(FILE *ffile, char sep);
 
-char sep = '\n'; // default separator
+char sep = DEFAULT_SEPARATOR;
 
 int main(int argc, char *argv[])
 {
@@ -47,14 +50,13 @@ int main(int argc, char *argv[])
 /* actual fortune function */
 void fortune(FILE *ffile, char sep)
 {
-	/* 255 characters per line */
-	int fnum = 0, buflen = 255, cur = 0, resfortune;
+	int fnum = 0, buflen = FORTUNE_LEN, cur = 0, resfortune;
 	char linebuf[buflen];
 
 	srand(time(NULL));
 
 	/* get number of fields in character */
-	while(fgets(linebuf, buflen, ffile)) {
+	while (fgets(linebuf, buflen, ffile)) {
 		if (sep == '\n') {
 			/* every line is a new fortune */
 			fnum++;
