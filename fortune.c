@@ -13,6 +13,7 @@
 #define FORTUNE_LEN 2048
 
 void fortune(FILE *ffile, char sep);
+void print_usage(void);
 
 char sep = DEFAULT_SEPARATOR;
 
@@ -23,19 +24,19 @@ int main(int argc, char *argv[])
 	if (argc == 1) {
 		fp = fopen("/lib/fortunes", "r");
 		if (!fp) {
-			fprintf(stderr, "/lib/fortunes does not exist.\nusage: fortune [file]\n");
+			print_usage();
 			return EXIT_FAILURE;
 		}
 	}
 	if (argc > 3) {
-		fprintf(stderr, "too many arguments.\nusage: fortune [file]\n");
+		print_usage();
 		return EXIT_FAILURE;
 	}
 
 	if (argc > 1) {
 		fp = fopen(argv[1], "r");
 		if (fp == NULL) {
-			fprintf(stderr, "can't open file\nusage: fortune [file]\n");
+			print_usage();
 			return EXIT_FAILURE;
 		}
 	}
@@ -47,7 +48,6 @@ int main(int argc, char *argv[])
 	return EXIT_SUCCESS;
 }
 
-/* actual fortune function */
 void fortune(FILE *ffile, char sep)
 {
 	int fnum = 0, buflen = FORTUNE_LEN, cur = 0, resfortune;
@@ -58,7 +58,6 @@ void fortune(FILE *ffile, char sep)
 	/* get number of fields in character */
 	while (fgets(linebuf, buflen, ffile)) {
 		if (sep == '\n') {
-			/* every line is a new fortune */
 			fnum++;
 		} else if (linebuf[0] == sep && strlen(linebuf) == 2) {
 			fnum++;
@@ -85,4 +84,9 @@ void fortune(FILE *ffile, char sep)
 			}
 		}
 	}
+}
+
+void print_usage()
+{
+	fprintf(stderr, "usage: fortune [file] [separator]\n");
 }
