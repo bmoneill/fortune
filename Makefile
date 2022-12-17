@@ -1,19 +1,12 @@
 include config.mk
 
-BIN=fortune
+all: fortune
 
-SRC=fortune.c
-
-all: $(BIN)
-
-$(BIN): $(SRC)
-	$(LD) $(LDFLAGS) $^ -o $@
-
-%.o: %.c
-	$(CC) -c $(CFLAGS) -o $@ $^
+fortune: fortune.c
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -f $(wildcard src/*.o) $(BIN)
+	rm -f fortune
 
 install: all
 	mkdir -p $(DESTDIR)$(PREFIX)/bin
