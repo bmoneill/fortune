@@ -10,6 +10,7 @@
 #include <time.h>
 
 #define DEFAULT_SEPARATOR '%'
+#define FORTUNE_FILE "/lib/fortunes"
 #define FORTUNE_LEN 2048
 
 void fortune(FILE *ffile, char sep);
@@ -21,25 +22,20 @@ int main(int argc, char *argv[])
 {
 	FILE *fp;
 
-	if (argc == 1) {
-		fp = fopen("/lib/fortunes", "r");
+	if (argc >= 1) {
+		fp = fopen(argv[1] ?: FORTUNE_FILE, "r");
 		if (!fp) {
+			fprintf(stderr, "%s not found\n", argv[1] ?: FORTUNE_FILE);
 			print_usage();
 			return EXIT_FAILURE;
 		}
 	}
+
 	if (argc > 3) {
 		print_usage();
 		return EXIT_FAILURE;
 	}
 
-	if (argc > 1) {
-		fp = fopen(argv[1], "r");
-		if (fp == NULL) {
-			print_usage();
-			return EXIT_FAILURE;
-		}
-	}
 	if (argc > 2)
 		sep = *argv[2];
 
