@@ -10,41 +10,31 @@
 #include <time.h>
 
 #define DEFAULT_SEPARATOR '%'
+#define FORTUNE_FILE "/lib/fortunes"
 #define FORTUNE_LEN 2048
 
-void fortune(FILE *ffile, char sep);
-void print_usage(void);
+#define USE(x,y) y ? y : x
 
-char sep = DEFAULT_SEPARATOR;
+void fortune(FILE *ffile, char sep);
 
 int main(int argc, char *argv[])
 {
-	FILE *fp;
+	char *ffile = USE(FORTUNE_FILE, argv[1]);
+	FILE *fp = fopen(ffile, "r");
 
-	if (argc == 1) {
-		fp = fopen("/lib/fortunes", "r");
-		if (!fp) {
-			print_usage();
-			return EXIT_FAILURE;
-		}
-	}
-	if (argc > 3) {
-		print_usage();
+	if (!fp) {
+		fprintf(stderr, "%s not found\n", ffile);
 		return EXIT_FAILURE;
 	}
 
-	if (argc > 1) {
-		fp = fopen(argv[1], "r");
-		if (fp == NULL) {
-			print_usage();
-			return EXIT_FAILURE;
-		}
+	if (argc > 3) {
+		fprintf(stderr, "usage: fortune [file] [separator]\n");
+		return EXIT_FAILURE;
 	}
-	if (argc > 2)
-		sep = *argv[2];
 
-	fortune(fp, sep);
+	fortune(fp, USE(*argv[2], DEFAULT_SEPARATOR));
 	fclose(fp);
+
 	return EXIT_SUCCESS;
 }
 
@@ -84,9 +74,4 @@ void fortune(FILE *ffile, char sep)
 			}
 		}
 	}
-}
-
-void print_usage()
-{
-	fprintf(stderr, "usage: fortune [file] [separator]\n");
 }
