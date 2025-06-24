@@ -1,5 +1,5 @@
 /*
- * simple fortune(1) implementation with added option to choose a
+ * simple fortune(6) implementation with added option to choose a
  * field separator.
  * Author: Ben O'Neill <ben@oneill.sh>
  * License: MIT
