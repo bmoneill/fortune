@@ -9,43 +9,49 @@
 #include <string.h>
 #include <time.h>
 
-#define DEFAULT_SEPARATOR '%'
+#define DEFAULT_SEPARATOR '\n'
 #define FORTUNE_FILE "/lib/fortunes"
 #define FORTUNE_LEN 2048
 
-#define USE(x,y) y ? y : x
-
-void fortune(FILE *ffile, char sep);
+void fortune(FILE *, char);
+void usage(const char *);
 
 int main(int argc, char *argv[])
 {
-	char *ffile = USE(FORTUNE_FILE, argv[1]);
-	FILE *fp = fopen(ffile, "r");
+	FILE *fp;
+	char sep = DEFAULT_SEPARATOR;
+
+	switch (argc) {
+		case 1:
+			fp = fopen(FORTUNE_FILE, "r");
+			break;
+		case 3:
+			sep = argv[2][0];
+		case 2:
+			fp = fopen(argv[1], "r");
+			break;
+		default:
+			usage(argv[0]);
+			return EXIT_FAILURE;
+	}
 
 	if (!fp) {
-		fprintf(stderr, "%s not found\n", ffile);
+		fprintf(stderr, "File could not be opened\n");
 		return EXIT_FAILURE;
 	}
 
-	if (argc > 3) {
-		fprintf(stderr, "usage: fortune [file] [separator]\n");
-		return EXIT_FAILURE;
-	}
-
-	fortune(fp, USE(*argv[2], DEFAULT_SEPARATOR));
+	fortune(fp, sep);
 	fclose(fp);
-
 	return EXIT_SUCCESS;
 }
 
-void fortune(FILE *ffile, char sep)
-{
+void fortune(FILE *ffile, char sep) {
 	int fnum = 0, buflen = FORTUNE_LEN, cur = 0, resfortune;
 	char linebuf[buflen];
 
 	srand(time(NULL));
 
-	/* get number of fields in character */
+	/* get number of fields in line */
 	while (fgets(linebuf, buflen, ffile)) {
 		if (sep == '\n') {
 			fnum++;
@@ -74,4 +80,8 @@ void fortune(FILE *ffile, char sep)
 			}
 		}
 	}
+}
+
+void usage(const char *argv0) {
+	fprintf(stderr, "Usage: %s [file] [separator]\n", argv0);
 }
