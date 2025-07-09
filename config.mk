@@ -1,4 +1,5 @@
 PREFIX = /usr/local
 
 CPPFLAGS = -D_DEFAULT_SOURCE -D_BSD_SOURCE -D_XOPEN_SOURCE=700 -D_FILE_OFFSET_BITS=64
-CFLAGS   = -O3 -Wall -std=c99 -pedantic $(CPPFLAGS)
+CFLAGS   = -O2 -Werror -std=c99 -pedantic $(CPPFLAGS)
+LDFLAGS  = -s
