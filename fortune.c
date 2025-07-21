@@ -46,7 +46,10 @@ int main(int argc, char *argv[])
 }
 
 void fortune(FILE *ffile, char sep) {
-	int fnum = 0, buflen = FORTUNE_LEN, cur = 0, resfortune;
+	int fnum = 0;
+    int buflen = FORTUNE_LEN;
+    int cur = 0;
+    int resfortune;
 	char linebuf[buflen];
 
 	srand(time(NULL));
