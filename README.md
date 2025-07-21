@@ -1,9 +1,7 @@
 # A simple fortune implementation
 
-This is a simple [fortune(6)](https://linux.die.net/man/6/fortune)
-implementation that supports the same file formats as the standard
-Linux/BSD versions. In addition, you may specify a custom fortune file
-and separator.
+This is a simple fortune implementation that supports the same file
+formats as the standard Linux/BSD versions.
 
 ## Installation
 
