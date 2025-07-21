@@ -10,81 +10,113 @@
 #include <time.h>
 
 #define DEFAULT_SEPARATOR '\n'
-#define FORTUNE_FILE "/lib/fortunes"
-#define FORTUNE_LEN 2048
+#define DEFAULT_FORTUNE_FILE "/lib/fortunes"
 
-void fortune(FILE *, char);
-void usage(const char *);
+static int  file_len(FILE *);
+static void fortune(char *, int, int, int);
+static char *load_file(const char *, char, int *, int *);
+static void usage(const char *);
 
 int main(int argc, char *argv[])
 {
-	FILE *fp;
+    const char *path = DEFAULT_FORTUNE_FILE;
 	char sep = DEFAULT_SEPARATOR;
+    int len = 0;
+    int count = 0;
+    int fortuneIndex = 0;
 
 	switch (argc) {
-		case 1:
-			fp = fopen(FORTUNE_FILE, "r");
-			break;
-		case 3:
-			sep = argv[2][0];
-		case 2:
-			fp = fopen(argv[1], "r");
-			break;
+		case 1: break;
+		case 3: sep = argv[2][0];
+		case 2: path = argv[1]; break;
 		default:
 			usage(argv[0]);
 			return EXIT_FAILURE;
 	}
 
-	if (!fp) {
-		fprintf(stderr, "File could not be opened\n");
-		return EXIT_FAILURE;
-	}
+    srand(time(NULL));
+    char *buf = load_file(path, sep, &len, &count);
+    fortuneIndex = rand() % count;
+    fortune(buf, len, count, fortuneIndex);
 
-	fortune(fp, sep);
-	fclose(fp);
+    free(buf);
 	return EXIT_SUCCESS;
 }
 
-void fortune(FILE *ffile, char sep) {
-	int fnum = 0;
-    int buflen = FORTUNE_LEN;
-    int cur = 0;
-    int resfortune;
-	char linebuf[buflen];
+static int file_len(FILE *ffile) {
+    int len = 0;
+    char c;
 
-	srand(time(NULL));
+    while ((c = fgetc(ffile)) != EOF) {
+        len++;
+    }
 
-	/* get number of fields in line */
-	while (fgets(linebuf, buflen, ffile)) {
-		if (sep == '\n') {
-			fnum++;
-		} else if (linebuf[0] == sep && strlen(linebuf) == 2) {
-			fnum++;
-		}
-	}
-
-	/* pull random fortune */
-	resfortune = rand() % fnum;
-
-	rewind(ffile);
-	while (fgets(linebuf, buflen, ffile)) {
-		if (sep == '\n' || (linebuf[0] == sep && strlen(linebuf) == 2))
-			cur++;
-
-		if (cur == resfortune) {
-			if (sep == '\n') {
-				printf("%s", linebuf);
-				return;
-			}
-			while (fgets(linebuf, buflen, ffile)) {
-				if (linebuf[0] == sep && strlen(linebuf) == 2)
-					return;
-				printf("%s", linebuf);
-			}
-		}
-	}
+    rewind(ffile);
+    return len;
 }
 
-void usage(const char *argv0) {
+static void fortune(char *buf, int bufLength, int fortuneCount, int index) {
+    int cur = 0;
+    for (int i = 0; i < bufLength; i++) {
+        if (buf[i] == '\0') {
+            cur++;
+        }
+
+        if (cur == index) {
+            int end = i + 1;
+            while (buf[end] != '\0' && buf[end] != '\n') {
+                end++;
+            }
+
+            buf[end] = '\0';
+            if (index == 0) {
+                printf("%s\n", buf);
+            } else {
+                printf("%s\n", &(buf[i + 1]));
+            }
+            return;
+        }
+    }
+}
+
+static char *load_file(const char *path, char sep, int *len, int *count) {
+    char *dst;
+    FILE *ffile;
+    count[0] = 0;
+
+    ffile = fopen(path, "r");
+    if (!ffile) {
+        fprintf(stderr, "Could not open file: %s\n", path);
+        exit(EXIT_FAILURE);
+    }
+
+    len[0] = file_len(ffile);
+
+    dst = malloc(*len + 1);
+    if (!dst) {
+        fprintf(stderr, "Memory allocation failed\n");
+        fclose(ffile);
+        exit(EXIT_FAILURE);
+    }
+
+    for (int i = 0; i < *len; i++) {
+        char c = fgetc(ffile);
+        if (c == EOF) {
+            break;
+        }
+
+        dst[i] = c;
+
+        if (dst[i] == sep) {
+            count[0]++;
+            dst[i] = '\0';
+        }
+    }
+
+    fclose(ffile);
+    return dst;
+}
+
+static void usage(const char *argv0) {
 	fprintf(stderr, "Usage: %s [file] [separator]\n", argv0);
 }
