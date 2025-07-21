@@ -64,7 +64,7 @@ static void fortune(char *buf, int bufLength, int fortuneCount, int index) {
 
         if (cur == index) {
             int end = i + 1;
-            while (buf[end] != '\0' && buf[end] != '\n') {
+            while (buf[end] != '\0') {
                 end++;
             }
 
