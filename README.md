@@ -5,14 +5,16 @@ formats as the standard Linux/BSD versions.
 
 ## Installation
 
-```
+### Linux
+
+```shell
 make
 sudo make install
 ```
 
 ## Usage
 
-```
+```shell
 fortune [file] [separator]
 ```
 
